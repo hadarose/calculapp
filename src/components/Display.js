@@ -1,2 +1,3 @@
-const Display = () => <div className="fs-3">0</div>;
+const Display = ({ props }) => <div className="fs-3">&nbsp;{props}</div>;
+
 export default Display;

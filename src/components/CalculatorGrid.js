@@ -1,64 +1,191 @@
 import Display from "./Display";
+import { useState } from "react";
 
 const CalculatorGrid = () => {
+  const [displayNumber, setDisplayNumber] = useState("0");
+  const [value, setValue] = useState(null);
+  const [operator, setOperator] = useState(null);
+  const [isPendingOperand, setIsPendingOperand] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+
+  const clearContent = () => {
+    setDisplayNumber("0");
+  };
+
+  const handleKey = (key) => {
+    if (isPendingOperand) {
+      setDisplayNumber(key);
+      setIsPendingOperand(false);
+    } else {
+      setDisplayNumber(displayNumber === "0" ? key : displayNumber + key);
+    }
+  };
+
+  const handleOperator = (inputOperator) => {
+    const operand = parseInt(displayNumber);
+
+    if (!value) {
+      setValue(operand);
+    } else if (operator) {
+      setValue(calculate(value, operand));
+      setDisplayNumber(String(calculate(value, operand)));
+    }
+
+    setIsPendingOperand(true);
+    setOperator(inputOperator);
+  };
+
+  const calculate = (previousValue, currentValue) => {
+    let result = 0;
+    switch (operator) {
+      case "+":
+        result = previousValue + currentValue;
+        break;
+      case "-":
+        result = previousValue - currentValue;
+        break;
+      case "/":
+        result = previousValue / currentValue;
+        break;
+      case "*":
+        result = previousValue * currentValue;
+        break;
+      case "=":
+        result = currentValue;
+        break;
+      default:
+        break;
+    }
+
+    return result;
+  };
+
   return (
     <div>
       <div className="container">
         <div className="row d-flex justify-content-center">
-          <div className="col-4 py-3 border border-dark d-flex justify-content-end bg-dark text-light">
-            <Display />
+          <div className="col-4 py-3 border border-dark d-flex justify-content-end bg-dark text-light my-auto">
+            <Display props={displayNumber} />
           </div>
         </div>
+
         <div className="row d-flex justify-content-center">
-          <div className="col-1 py-2 border border-dark bg-light text-dark">
+          <button
+            onClick={clearContent}
+            className="col-1 py-2 btn border border-dark bg-light text-dark"
+          >
             AC
-          </div>
+          </button>
           <div className="col-1 py-2 border border-dark bg-light text-dark" />
           <div className="col-1 py-2 border border-dark bg-light text-dark" />
-          <div className="col-1 py-2 border border-dark bg-warning">&#247;</div>
+          <button
+            className="col-1 py-2 border border-dark bg-warning"
+            onClick={() => handleOperator("/")}
+          >
+            &#247;
+          </button>
         </div>
         <div className="row d-flex justify-content-center">
-          <div className="col-1 py-2 border border-dark bg-secondary text-white">
+          <button
+            onClick={(e) => handleKey(e.target.value)}
+            className="col-1 py-2 border border-dark bg-secondary text-white"
+            value="7"
+          >
             7
-          </div>
-          <div className="col-1 py-2 border border-dark bg-secondary text-white">
+          </button>
+          <button
+            onClick={(e) => handleKey(e.target.value)}
+            className="col-1 py-2 border border-dark bg-secondary text-white"
+            value="8"
+          >
             8
-          </div>
-          <div className="col-1 py-2 border border-dark bg-secondary text-white">
+          </button>
+          <button
+            onClick={(e) => handleKey(e.target.value)}
+            className="col-1 py-2 border border-dark bg-secondary text-white"
+            value="9"
+          >
             9
-          </div>
-          <div className="col-1 py-2 border border-dark bg-warning">&#215;</div>
+          </button>
+          <button
+            className="col-1 py-2 border border-dark bg-warning"
+            onClick={() => handleOperator("*")}
+          >
+            &#215;
+          </button>
         </div>
         <div className="row d-flex justify-content-center">
-          <div className="col-1 py-2 border border-dark bg-secondary text-white">
+          <button
+            onClick={(e) => handleKey(e.target.value)}
+            className="col-1 py-2 border border-dark bg-secondary text-white"
+            value="4"
+          >
             4
-          </div>
-          <div className="col-1 py-2 border border-dark bg-secondary text-white">
+          </button>
+          <button
+            onClick={(e) => handleKey(e.target.value)}
+            className="col-1 py-2 border border-dark bg-secondary text-white"
+            value="5"
+          >
             5
-          </div>
-          <div className="col-1 py-2 border border-dark bg-secondary text-white">
+          </button>
+          <button
+            onClick={(e) => handleKey(e.target.value)}
+            className="col-1 py-2 border border-dark bg-secondary text-white"
+            value="6"
+          >
             6
-          </div>
-          <div className="col-1 py-2 border border-dark bg-warning">-</div>
+          </button>
+          <button
+            className="col-1 py-2 border border-dark bg-warning"
+            onClick={() => handleOperator("-")}
+          >
+            -
+          </button>
         </div>
         <div className="row d-flex justify-content-center">
-          <div className="col-1 py-2 border border-dark bg-secondary text-white">
+          <button
+            onClick={(e) => handleKey(e.target.value)}
+            className="col-1 py-2 border border-dark bg-secondary text-white"
+            value="1"
+          >
             1
-          </div>
-          <div className="col-1 py-2 border border-dark bg-secondary text-white">
+          </button>
+          <button
+            onClick={(e) => handleKey(e.target.value)}
+            className="col-1 py-2 border border-dark bg-secondary text-white"
+            value="2"
+          >
             2
-          </div>
-          <div className="col-1 py-2 border border-dark bg-secondary text-white">
+          </button>
+          <button
+            onClick={(e) => handleKey(e.target.value)}
+            className="col-1 py-2 border border-dark bg-secondary text-white"
+            value="3"
+          >
             3
-          </div>
-          <div className="col-1 py-2 border border-dark bg-warning">+</div>
+          </button>
+          <button
+            className="col-1 py-2 border border-dark bg-warning"
+            onClick={() => handleOperator("+")}
+          >
+            +
+          </button>
         </div>
         <div className="row d-flex justify-content-center">
-          <div className="col-2 py-2 border border-dark bg-secondary text-white">
+          <button
+            onClick={(e) => handleKey(e.target.value)}
+            className="col-3 py-2 border border-dark bg-secondary text-white"
+            value="0"
+          >
             0
-          </div>
-          <div className="col-1 py-2 border border-dark bg-secondary text-white" />
-          <div className="col-1 py-2 border border-dark bg-warning">=</div>
+          </button>
+          <button
+            className="col-1 py-2 border border-dark bg-warning"
+            onClick={() => handleOperator("=")}
+          >
+            =
+          </button>
         </div>
       </div>
     </div>
