@@ -6,10 +6,12 @@ const CalculatorGrid = () => {
   const [value, setValue] = useState(null);
   const [operator, setOperator] = useState(null);
   const [isPendingOperand, setIsPendingOperand] = useState(false);
-  const [isPressed, setIsPressed] = useState(false);
 
   const clearContent = () => {
     setDisplayNumber("0");
+    setValue(null);
+    setOperator(null);
+    setIsPendingOperand(false);
   };
 
   const handleKey = (key) => {
@@ -64,7 +66,7 @@ const CalculatorGrid = () => {
     <div>
       <div className="container">
         <div className="row d-flex justify-content-center">
-          <div className="col-4 py-3 border border-dark d-flex justify-content-end bg-dark text-light my-auto">
+          <div className="col-4 py-3 border border-dark d-flex justify-content-end bg-dark text-light">
             <Display props={displayNumber} />
           </div>
         </div>
@@ -72,14 +74,16 @@ const CalculatorGrid = () => {
         <div className="row d-flex justify-content-center">
           <button
             onClick={clearContent}
-            className="col-1 py-2 btn border border-dark bg-light text-dark"
+            className="col-1 py-2 border border-dark bg-light text-dark"
           >
             AC
           </button>
           <div className="col-1 py-2 border border-dark bg-light text-dark" />
           <div className="col-1 py-2 border border-dark bg-light text-dark" />
           <button
-            className="col-1 py-2 border border-dark bg-warning"
+            className="col-1 py-2 btn border border-dark btn-warning rounded-0"
+            data-toggle="button"
+            aria-pressed="false"
             onClick={() => handleOperator("/")}
           >
             &#247;
@@ -108,7 +112,9 @@ const CalculatorGrid = () => {
             9
           </button>
           <button
-            className="col-1 py-2 border border-dark bg-warning"
+            className="col-1 py-2 btn border border-dark btn-warning rounded-0"
+            data-toggle="button"
+            aria-pressed="false"
             onClick={() => handleOperator("*")}
           >
             &#215;
@@ -137,7 +143,9 @@ const CalculatorGrid = () => {
             6
           </button>
           <button
-            className="col-1 py-2 border border-dark bg-warning"
+            className="col-1 py-2 btn border border-dark btn-warning rounded-0"
+            data-toggle="button"
+            aria-pressed="false"
             onClick={() => handleOperator("-")}
           >
             -
@@ -166,7 +174,9 @@ const CalculatorGrid = () => {
             3
           </button>
           <button
-            className="col-1 py-2 border border-dark bg-warning"
+            className="col-1 py-2 btn border border-dark btn-warning rounded-0"
+            data-toggle="button"
+            aria-pressed="false"
             onClick={() => handleOperator("+")}
           >
             +
@@ -174,8 +184,8 @@ const CalculatorGrid = () => {
         </div>
         <div className="row d-flex justify-content-center">
           <button
-            onClick={(e) => handleKey(e.target.value)}
             className="col-3 py-2 border border-dark bg-secondary text-white"
+            onClick={(e) => handleKey(e.target.value)}
             value="0"
           >
             0
