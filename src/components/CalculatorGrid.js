@@ -2,13 +2,13 @@ import Display from "./Display";
 import { useState } from "react";
 
 const CalculatorGrid = () => {
-  const [displayNumber, setDisplayNumber] = useState("0");
+  const [displayValue, setDisplayValue] = useState("0");
   const [value, setValue] = useState(null);
   const [operator, setOperator] = useState(null);
   const [isPendingOperand, setIsPendingOperand] = useState(false);
 
   const clearContent = () => {
-    setDisplayNumber("0");
+    setDisplayValue("0");
     setValue(null);
     setOperator(null);
     setIsPendingOperand(false);
@@ -16,44 +16,47 @@ const CalculatorGrid = () => {
 
   const handleKey = (key) => {
     if (isPendingOperand) {
-      setDisplayNumber(key);
+      setDisplayValue(key);
       setIsPendingOperand(false);
     } else {
-      setDisplayNumber(displayNumber === "0" ? key : displayNumber + key);
+      setDisplayValue(displayValue === "0" ? key : displayValue + key);
     }
   };
 
   const handleOperator = (inputOperator) => {
-    const operand = parseInt(displayNumber);
+    const operand = Number(displayValue);
 
     if (!value) {
       setValue(operand);
-    } else if (operator) {
+    } else if (operator && !isPendingOperand) {
       setValue(calculate(value, operand));
-      setDisplayNumber(String(calculate(value, operand)));
+      setDisplayValue(String(calculate(value, operand)));
+    } else if (operator && isPendingOperand && inputOperator === "=") {
+      setValue(calculate(value, value));
+      setDisplayValue(String(calculate(value, value)));
     }
 
-    setIsPendingOperand(true);
     setOperator(inputOperator);
+    setIsPendingOperand(true);
   };
 
-  const calculate = (previousValue, currentValue) => {
-    let result = 0;
+  const calculate = (previousValue, operand) => {
+    let result = previousValue;
     switch (operator) {
       case "+":
-        result = previousValue + currentValue;
+        result += operand;
         break;
       case "-":
-        result = previousValue - currentValue;
+        result -= operand;
         break;
       case "/":
-        result = previousValue / currentValue;
+        result /= operand;
         break;
       case "*":
-        result = previousValue * currentValue;
+        result *= operand;
         break;
       case "=":
-        result = currentValue;
+        result = operand;
         break;
       default:
         break;
@@ -67,7 +70,7 @@ const CalculatorGrid = () => {
       <div className="container">
         <div className="row d-flex justify-content-center">
           <div className="col-4 py-3 border border-dark d-flex justify-content-end bg-dark text-light">
-            <Display props={displayNumber} />
+            <Display display={displayValue} />
           </div>
         </div>
 
@@ -91,23 +94,20 @@ const CalculatorGrid = () => {
         </div>
         <div className="row d-flex justify-content-center">
           <button
-            onClick={(e) => handleKey(e.target.value)}
+            onClick={() => handleKey("7")}
             className="col-1 py-2 border border-dark bg-secondary text-white"
-            value="7"
           >
             7
           </button>
           <button
-            onClick={(e) => handleKey(e.target.value)}
+            onClick={() => handleKey("8")}
             className="col-1 py-2 border border-dark bg-secondary text-white"
-            value="8"
           >
             8
           </button>
           <button
-            onClick={(e) => handleKey(e.target.value)}
+            onClick={() => handleKey("9")}
             className="col-1 py-2 border border-dark bg-secondary text-white"
-            value="9"
           >
             9
           </button>
@@ -122,23 +122,20 @@ const CalculatorGrid = () => {
         </div>
         <div className="row d-flex justify-content-center">
           <button
-            onClick={(e) => handleKey(e.target.value)}
+            onClick={() => handleKey("4")}
             className="col-1 py-2 border border-dark bg-secondary text-white"
-            value="4"
           >
             4
           </button>
           <button
-            onClick={(e) => handleKey(e.target.value)}
+            onClick={() => handleKey("5")}
             className="col-1 py-2 border border-dark bg-secondary text-white"
-            value="5"
           >
             5
           </button>
           <button
-            onClick={(e) => handleKey(e.target.value)}
+            onClick={() => handleKey("6")}
             className="col-1 py-2 border border-dark bg-secondary text-white"
-            value="6"
           >
             6
           </button>
@@ -153,23 +150,20 @@ const CalculatorGrid = () => {
         </div>
         <div className="row d-flex justify-content-center">
           <button
-            onClick={(e) => handleKey(e.target.value)}
+            onClick={() => handleKey("1")}
             className="col-1 py-2 border border-dark bg-secondary text-white"
-            value="1"
           >
             1
           </button>
           <button
-            onClick={(e) => handleKey(e.target.value)}
+            onClick={() => handleKey("2")}
             className="col-1 py-2 border border-dark bg-secondary text-white"
-            value="2"
           >
             2
           </button>
           <button
-            onClick={(e) => handleKey(e.target.value)}
+            onClick={() => handleKey("3")}
             className="col-1 py-2 border border-dark bg-secondary text-white"
-            value="3"
           >
             3
           </button>
@@ -185,8 +179,7 @@ const CalculatorGrid = () => {
         <div className="row d-flex justify-content-center">
           <button
             className="col-3 py-2 border border-dark bg-secondary text-white"
-            onClick={(e) => handleKey(e.target.value)}
-            value="0"
+            onClick={() => handleKey("0")}
           >
             0
           </button>
