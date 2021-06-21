@@ -2,50 +2,67 @@ import Display from "./Display";
 import { useState } from "react";
 
 const Calculator = () => {
-  const [displayValue, setDisplayValue] = useState("0");
+  const [display, setDisplay] = useState("0");
   const [value, setValue] = useState(null);
   const [operator, setOperator] = useState(null);
   const [isPendingOperand, setIsPendingOperand] = useState(false);
   const [lastOperand, setLastOperand] = useState(null);
+  const [lastOperator, setLastOperator] = useState(null);
 
   const clearContent = () => {
-    setDisplayValue("0");
+    setDisplay("0");
     setValue(null);
     setOperator(null);
     setIsPendingOperand(false);
   };
 
   const handleKey = (key) => {
-    setLastOperand(Number(key));
-
     if (isPendingOperand) {
-      setDisplayValue(key);
+      setDisplay(key);
       setIsPendingOperand(false);
     } else {
-      setDisplayValue(displayValue === "0" ? key : displayValue + key);
+      setDisplay(display === "0" ? key : display + key);
     }
+
+    setLastOperand(Number(key));
   };
 
   const handleOperator = (inputOperator) => {
-    const operand = Number(displayValue);
+    const operand = Number(display);
 
-    if (!value) {
+    if (value) {
+      if (operator && !isPendingOperand) {
+        setValue(calculate(value, operator, operand));
+        setDisplay(String(calculate(value, operator, operand)));
+      } else if (
+        operator !== "=" &&
+        isPendingOperand &&
+        inputOperator === "="
+      ) {
+        setValue(calculate(value, operator, value));
+        setDisplay(String(calculate(value, operator, value)));
+      } else if (
+        operator === "=" &&
+        isPendingOperand &&
+        inputOperator === "="
+      ) {
+        setValue(calculate(value, lastOperator, lastOperand));
+        setDisplay(String(calculate(value, lastOperator, lastOperand)));
+      }
+    } else {
       setValue(operand);
-    } else if (operator && !isPendingOperand) {
-      setValue(calculate(value, operand));
-      setDisplayValue(String(calculate(value, operand)));
-    } else if (operator && isPendingOperand && inputOperator === "=") {
-      setValue(calculate(value, value));
-      setDisplayValue(String(calculate(value, value)));
     }
 
     setOperator(inputOperator);
+    if (inputOperator !== "=") {
+      setLastOperator(inputOperator);
+    }
     setIsPendingOperand(true);
   };
 
-  const calculate = (previousValue, operand) => {
+  const calculate = (previousValue, currentOperator, operand) => {
     let result = previousValue;
-    switch (operator) {
+    switch (currentOperator) {
       case "+":
         result += operand;
         break;
@@ -59,11 +76,8 @@ const Calculator = () => {
         result *= operand;
         break;
       case "=":
-        if (lastOperand) {
-          result = operand + lastOperand;
-        } else {
-          result = operand;
-        }
+        result = operand;
+
         break;
       default:
         break;
@@ -74,10 +88,16 @@ const Calculator = () => {
 
   return (
     <div>
+      value: {value} <br />
+      operator: {operator} <br />
+      isPending: {isPendingOperand && "true"} <br />
+      lastOperand: {lastOperand}
+      <br />
+      lastOperator: {lastOperator}
       <div className="container">
         <div className="row d-flex justify-content-center">
           <div className="col-4 py-3 border border-dark d-flex justify-content-end bg-dark text-light">
-            <Display display={displayValue} />
+            <Display display={display} />
           </div>
         </div>
 
