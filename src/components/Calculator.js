@@ -14,6 +14,8 @@ const Calculator = () => {
     setValue(null);
     setOperator(null);
     setIsPendingOperand(false);
+    setLastOperator(null);
+    setLastOperand(null);
   };
 
   const handleKey = (key) => {
@@ -30,38 +32,28 @@ const Calculator = () => {
   const handleOperator = (inputOperator) => {
     const operand = Number(display);
 
-    if (value) {
-      if (operator && !isPendingOperand) {
-        setValue(calculate(value, operator, operand));
-        setDisplay(String(calculate(value, operator, operand)));
-      } else if (
-        operator !== "=" &&
-        isPendingOperand &&
-        inputOperator === "="
-      ) {
-        setValue(calculate(value, operator, value));
-        setDisplay(String(calculate(value, operator, value)));
-      } else if (
-        operator === "=" &&
-        isPendingOperand &&
-        inputOperator === "="
-      ) {
-        setValue(calculate(value, lastOperator, lastOperand));
-        setDisplay(String(calculate(value, lastOperator, lastOperand)));
-      }
-    } else {
-      setValue(operand);
-    }
-
     setOperator(inputOperator);
     if (inputOperator !== "=") {
       setLastOperator(inputOperator);
     }
+
+    if (value === null) {
+      setValue(operand);
+    } else {
+      if (!isPendingOperand) {
+        setValue(calculate(operator, operand));
+      } else if (operator !== "=" && inputOperator === "=") {
+        setValue(calculate(operator, value));
+      } else if (operator === "=" && inputOperator === "=") {
+        setValue(calculate(lastOperator, lastOperand));
+      }
+    }
+
     setIsPendingOperand(true);
   };
 
-  const calculate = (previousValue, currentOperator, operand) => {
-    let result = previousValue;
+  const calculate = (currentOperator, operand) => {
+    let result = value;
     switch (currentOperator) {
       case "+":
         result += operand;
@@ -77,23 +69,17 @@ const Calculator = () => {
         break;
       case "=":
         result = operand;
-
         break;
       default:
         break;
     }
 
+    setDisplay(String(result));
     return result;
   };
 
   return (
     <div>
-      value: {value} <br />
-      operator: {operator} <br />
-      isPending: {isPendingOperand && "true"} <br />
-      lastOperand: {lastOperand}
-      <br />
-      lastOperator: {lastOperator}
       <div className="container">
         <div className="row d-flex justify-content-center">
           <div className="col-4 py-3 border border-dark d-flex justify-content-end bg-dark text-light">
