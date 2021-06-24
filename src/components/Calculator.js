@@ -40,19 +40,21 @@ const Calculator = () => {
     if (value === null) {
       setValue(operand);
     } else {
+      const isEqualPressedRepeatedly =
+        operator === "=" && inputOperator === "=";
       if (!isPendingOperand) {
-        setValue(calculate(operator, operand));
-      } else if (operator !== "=" && inputOperator === "=") {
-        setValue(calculate(operator, value));
-      } else if (operator === "=" && inputOperator === "=") {
-        setValue(calculate(lastOperator, lastOperand));
+        setValue(calculateAndSetDisplay(operator, operand));
+      } else if (!isEqualPressedRepeatedly) {
+        setValue(calculateAndSetDisplay(operator, value));
+      } else if (isEqualPressedRepeatedly) {
+        setValue(calculateAndSetDisplay(lastOperator, lastOperand));
       }
     }
 
     setIsPendingOperand(true);
   };
 
-  const calculate = (currentOperator, operand) => {
+  const calculateAndSetDisplay = (currentOperator, operand) => {
     let result = value;
     switch (currentOperator) {
       case "+":
